@@ -1,0 +1,9 @@
+CREATE TABLE IF NOT EXISTS cliente (
+    id SERIAL PRIMARY KEY,
+    nome VARCHAR(255) NOT NULL,
+    telefone VARCHAR(20),
+    email VARCHAR(255),
+     cpf VARCHAR(11) UNIQUE,
+     cnpj VARCHAR(14) UNIQUE,
+     data_criacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
