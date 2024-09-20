@@ -3,6 +3,7 @@ package br.com.checkok.resource;
 import java.net.URI;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 import org.jboss.resteasy.annotations.jaxrs.PathParam;
 
@@ -62,8 +63,14 @@ public class ClienteController {
     @PATCH
     @Path("/{id}")
     public Response atualizarClienteParcial(@PathParam Long id, Cliente cliente) {
-        clienteDao.update(id, cliente.getNome(), cliente.getTelefone(), cliente.getEmail());
-        return Response.noContent().build();
+        Optional<Cliente> clienteExistente = clienteDao.findById(id);
+        
+        if (clienteExistente.isPresent()) {
+            clienteDao.update(id, cliente.getNome(), cliente.getTelefone(), cliente.getEmail());
+            return Response.ok(clienteExistente.get()).build(); 
+        } else {
+            return Response.status(Response.Status.NOT_FOUND).build();
+        }
     }
     
     @DELETE
