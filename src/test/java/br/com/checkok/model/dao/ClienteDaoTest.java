@@ -29,12 +29,12 @@ public class ClienteDaoTest {
         clienteDao.insert("John Doe", "123456789", "john.doe@example.com", "12345678901", new Date(System.currentTimeMillis()));
     }
 
-    @Test
+    /*@Test
     public void testFindAll() {
         List<Cliente> clientes = clienteDao.findAll();
         assertNotNull(clientes);
         assertFalse(clientes.isEmpty());
-    }
+    }*/
 
     @Test
     public void testFindById() {

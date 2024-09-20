@@ -11,13 +11,20 @@ import jakarta.inject.Inject;
 
 @ApplicationScoped
 public class EnderecoDao {
-
     @Inject
     Jdbi jdbi;
 
     public List<Endereco> findAll() {
         return jdbi.withHandle(handle -> 
             handle.createQuery("SELECT * FROM enderecos")
+                  .mapToBean(Endereco.class)
+                  .list());
+    }
+
+    public List<Endereco> findByClienteId(Long clienteId) {
+        return jdbi.withHandle(handle ->
+            handle.createQuery("SELECT * FROM enderecos WHERE cliente_id = :clienteId")
+                  .bind("clienteId", clienteId)
                   .mapToBean(Endereco.class)
                   .list());
     }

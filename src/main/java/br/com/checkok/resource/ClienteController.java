@@ -1,6 +1,8 @@
 package br.com.checkok.resource;
 
 import java.net.URI;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -13,11 +15,13 @@ import br.com.checkok.util.CpfCnpjValidator;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.DELETE;
+import jakarta.ws.rs.DefaultValue;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.PUT;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.UriBuilder;
@@ -31,8 +35,24 @@ public class ClienteController {
     ClienteDao clienteDao;
 
     @GET
-    public List<Cliente> listarClientes() {
-        return clienteDao.findAll();
+    public Response listarClientes(@QueryParam("nome") String nomeFiltro,
+                                   @QueryParam("dataCriacao") String dataCriacaoStr,
+                                   @QueryParam("limit") @DefaultValue("10") int limit,
+                                   @QueryParam("offset") @DefaultValue("0") int offset) {
+        Date dataCriacaoFiltro = null;
+        if (dataCriacaoStr != null && !dataCriacaoStr.isEmpty()) {
+            try {
+                SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy");
+                dataCriacaoFiltro = format.parse(dataCriacaoStr);
+            } catch (ParseException e) {
+                return Response.status(Response.Status.BAD_REQUEST)
+                               .entity("Formato de data inválido. Use o formato 'dd/MM/yyyy'.")
+                               .build();
+            }
+        }
+        
+        List<Cliente> clientes = clienteDao.findAll(nomeFiltro, dataCriacaoFiltro, offset, limit);
+        return Response.ok(clientes).build();
     }
 
     @GET

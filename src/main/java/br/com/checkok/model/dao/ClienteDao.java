@@ -17,11 +17,47 @@ public class ClienteDao {
 	@Inject
 	Jdbi jdbi;
 
-	public List<Cliente> findAll() {
-		return jdbi.withHandle(handle -> handle.createQuery(
-				"SELECT c.id, c.nome, c.telefone, c.email, c.cpf, c.data_criacao, e.id as endereco_id, e.rua, e.cidade, e.estado, e.cep FROM clientes c LEFT JOIN enderecos e ON c.id = e.cliente_id")
-				.map(new ClienteMapper()).list());
+	public List<Cliente> findAll(String nomeFiltro, Date dataCriacaoFiltro, int offset, int limit) {
+	    StringBuilder query = new StringBuilder("SELECT c.id, c.nome, c.telefone, c.email, c.cpf, c.data_criacao, e.id as endereco_id, e.rua, e.cidade, e.estado, e.cep FROM clientes c LEFT JOIN enderecos e ON c.id = e.cliente_id");
+	    
+	    boolean whereClauseAdded = false;
+
+	    if (nomeFiltro != null || dataCriacaoFiltro != null) {
+	        query.append(" WHERE");
+	        
+	        if (nomeFiltro != null) {
+	            query.append(" c.nome LIKE :nome");
+	            whereClauseAdded = true;
+	        }
+	        
+	        if (dataCriacaoFiltro != null) {
+	            if (whereClauseAdded) {
+	                query.append(" AND");
+	            }
+	            query.append(" DATE(c.data_criacao) = :dataCriacao");
+	        }
+	    }
+	    
+	    query.append(" LIMIT :limit OFFSET :offset");
+
+	    return jdbi.withHandle(handle -> {
+	        var q = handle.createQuery(query.toString());
+	        
+	        if (nomeFiltro != null) {
+	            q.bind("nome", "%" + nomeFiltro + "%");
+	        }
+	        
+	        if (dataCriacaoFiltro != null) {
+	            q.bind("dataCriacao", dataCriacaoFiltro);
+	        }
+
+	        q.bind("limit", limit);
+	        q.bind("offset", offset);
+
+	        return q.map(new ClienteMapper()).list();
+	    });
 	}
+
 
 	public Optional<Cliente> findById(Long id) {
 		return jdbi.withHandle(handle -> handle.createQuery(
