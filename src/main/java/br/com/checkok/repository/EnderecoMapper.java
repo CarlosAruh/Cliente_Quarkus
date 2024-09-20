@@ -6,10 +6,9 @@ import java.sql.SQLException;
 import org.jdbi.v3.core.mapper.RowMapper;
 import org.jdbi.v3.core.statement.StatementContext;
 
-import br.com.checkok.model.Endereco;
+import br.com.checkok.model.entities.Endereco;
 
 public class EnderecoMapper implements RowMapper<Endereco> {
-
     @Override
     public Endereco map(ResultSet rs, StatementContext ctx) throws SQLException {
         Endereco endereco = new Endereco();

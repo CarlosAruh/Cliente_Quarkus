@@ -1,9 +1,13 @@
 package br.com.checkok.model.entities;
 
+import java.io.Serializable;
 import java.sql.Timestamp;
 import java.util.List;
+import java.util.Objects;
 
-public class Cliente {
+public class Cliente implements Serializable {
+
+	private static final long serialVersionUID = 1L;
 
 	private Long id;
 	private String nome;
@@ -94,4 +98,29 @@ public class Cliente {
 		this.enderecos = enderecos;
 	}
 
+	@Override
+	public int hashCode() {
+		return Objects.hash(cnpj, cpf, dataCriacao, email, enderecos, id, nome, telefone);
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Cliente other = (Cliente) obj;
+		return Objects.equals(cnpj, other.cnpj) && Objects.equals(cpf, other.cpf)
+				&& Objects.equals(dataCriacao, other.dataCriacao) && Objects.equals(email, other.email)
+				&& Objects.equals(enderecos, other.enderecos) && Objects.equals(id, other.id)
+				&& Objects.equals(nome, other.nome) && Objects.equals(telefone, other.telefone);
+	}
+
+	@Override
+	public String toString() {
+		return "Cliente [id=" + id + ", nome=" + nome + ", telefone=" + telefone + ", email=" + email + ", cpf=" + cpf
+				+ ", cnpj=" + cnpj + ", dataCriacao=" + dataCriacao + ", enderecos=" + enderecos + "]";
+	}
 }
